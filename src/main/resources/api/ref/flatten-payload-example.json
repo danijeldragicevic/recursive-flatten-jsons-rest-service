@@ -1,0 +1,60 @@
+[
+  {
+    "id": "T01",
+    "name": "Truck",
+    "childLevelId": 1000
+  },
+  {
+    "id": "PL01",
+    "name": "Palette",
+    "parentLevelId": 1000,
+    "childLevelId": 1001
+  },
+  {
+    "id": "BO01",
+    "name": "Box",
+    "parentLevelId": 1001,
+    "childLevelId": 1002
+  },
+  {
+    "id": "BA01",
+    "name": "Bag",
+    "parentLevelId": 1002,
+    "childLevelId": 1003
+  },
+  {
+    "id": "TS01",
+    "name": "T-shirt",
+    "parentLevelId": 1003,
+    "childLevelId": 1004
+  },
+  {
+    "id": "T02",
+    "name": "Truck",
+    "childLevelId": 2000
+  },
+  {
+    "id": "PL02",
+    "name": "Palette",
+    "parentLevelId": 2000,
+    "childLevelId": 2001
+  },
+  {
+    "id": "BO02",
+    "name": "Box",
+    "parentLevelId": 2001,
+    "childLevelId": 2002
+  },
+  {
+    "id": "BA02",
+    "name": "Bag",
+    "parentLevelId": 2002,
+    "childLevelId": 2003
+  },
+  {
+    "id": "TS02",
+    "name": "T-shirt",
+    "parentLevelId": 2003,
+    "childLevelId": 2004
+  }
+]

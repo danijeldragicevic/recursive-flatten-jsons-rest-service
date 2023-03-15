@@ -1,0 +1,28 @@
+#%RAML 1.0
+title: recursive-flatten-jsons-api
+
+/recursive:
+  description: Receives a recursive data structure and returns the flattened one.
+  post:
+    body:
+      application/json:
+        type: !include ref/recursive-payload-schema.json
+        example: !include ref/recursive-payload-example.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include ref/flatten-payload-example.json
+    
+/flatten:
+  description: Receives a flattened data structure and returnes the recursive one.
+  post:
+    body:
+      application/json:
+        type: !include ref/flatten-payload-schema.json
+        example: !include ref/flatten-payload-example.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include ref/recursive-payload-example.json

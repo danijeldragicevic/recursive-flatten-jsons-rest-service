@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="recursive2flatten" doc:id="2d8718e7-4a6f-4f5e-a46b-43f18aabd704">
+		<ee:transform doc:name="Create response" doc:id="09a92e63-388b-44b9-b2cf-f01e27c18cf4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+skipNullOn = "everywhere"
+
+fun mapUnitArray(inputData) = (
+    inputData map(d) -> mapUnit(d)
+)
+
+fun mapUnit(inputData) = flatten ([{
+    id: inputData.id,
+    name: inputData.name,
+    parentLevelId: inputData.parentLevelId,
+    childLevelId: inputData.childLevelId
+}] ++ mapUnitArray(inputData.unit default []))
+
+---
+flatten (mapUnitArray(payload))
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="flatten2recursive" doc:id="2c9d3d05-6339-40e4-9009-a5bb0962195c" >
+		<ee:transform doc:name="Create response" doc:id="4b91a75e-d9c4-4fe4-8cd4-02f5ccf995a7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import try, fail from dw::Runtime
+
+output application/json
+skipNullOn = "everywhere"
+
+var allUnits = payload default []
+var parentUnits = allUnits filter $.parentLevelId == null default []
+var childUnits = allUnits filter $.parentLevelId != null default []
+
+fun createUnits(units :Array) = (
+    units map ((u) -> {
+        id: u.id,
+        name: u.name,
+        parentLevelId: u.parentLevelId,
+        childLevelId: u.childLevelId,
+        unit:
+            // Catches stackoverflow exception
+            try (() ->
+                if (isEmpty(createUnits(childUnits filter $.parentLevelId == u.childLevelId))) null
+                else createUnits(childUnits filter $.parentLevelId == u.childLevelId)
+            )
+            // Eliminates 'success' field, that is coming as result of try() function
+            match {
+                case v if (v.success) -> v.result
+                else -> $.error
+            }
+    })
+)
+---
+createUnits(parentUnits)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
